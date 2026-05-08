@@ -1,0 +1,755 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Total Wireless Easy Quote Tool</title>
+<style>
+:root{
+  --brand:#00a88f;
+  --dark:#006f61;
+  --bg:#f4f7fb;
+  --card:#ffffff;
+  --ink:#101828;
+  --muted:#667085;
+  --line:#e5e7eb;
+  --red:#d71920;
+  --gold:#fff7df;
+  --blue:#eef4ff;
+  --soft:#e8fff9;
+  --shadow:0 14px 34px rgba(16,24,40,.08);
+}
+*{box-sizing:border-box}
+body{
+  margin:0;
+  background:linear-gradient(180deg,#eafff9 0%,#f4f7fb 260px);
+  font-family:Arial,Helvetica,sans-serif;
+  color:var(--ink);
+}
+.wrapper{max-width:1180px;margin:auto;padding:14px}
+.hero{
+  background:linear-gradient(135deg,var(--brand),var(--dark));
+  color:white;
+  border-radius:28px;
+  padding:24px;
+  box-shadow:0 18px 40px rgba(0,111,97,.22);
+}
+.hero h1{margin:0;font-size:30px;letter-spacing:-.5px}
+.hero p{margin:8px 0 0;opacity:.95;font-size:14px}
+.stepbar{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:8px;
+  margin-top:14px;
+}
+.step{
+  background:white;
+  border:1px solid var(--line);
+  border-radius:18px;
+  padding:12px;
+  font-weight:900;
+  color:#344054;
+  cursor:pointer;
+}
+.step.active{background:var(--brand);color:white;border-color:var(--brand)}
+.page{display:none}
+.page.active{display:block}
+.panel,.card{
+  background:var(--card);
+  margin-top:14px;
+  padding:18px;
+  border-radius:24px;
+  box-shadow:var(--shadow);
+  border:1px solid rgba(228,231,236,.86);
+}
+.head{
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+  gap:12px;
+  margin-bottom:14px;
+}
+h2{margin:0;font-size:21px;letter-spacing:-.25px}
+h3{margin:0 0 10px;font-size:17px}
+.helper,.small{font-size:13px;color:var(--muted);line-height:1.4}
+.num{
+  display:inline-flex;
+  min-width:32px;
+  height:32px;
+  align-items:center;
+  justify-content:center;
+  border-radius:999px;
+  background:var(--soft);
+  color:var(--dark);
+  border:1px solid #99f6e4;
+  font-weight:950;
+}
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.biggrid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.tile{
+  position:relative;
+  border:1.6px solid var(--line);
+  border-radius:20px;
+  background:white;
+  padding:16px;
+  min-height:112px;
+  cursor:pointer;
+  transition:.15s;
+}
+.tile:hover,.tile.active{
+  border-color:var(--brand);
+  background:var(--soft);
+  transform:translateY(-1px);
+}
+.tile.active:after{
+  content:"✓";
+  position:absolute;
+  right:12px;
+  top:12px;
+  background:var(--brand);
+  color:#fff;
+  width:24px;
+  height:24px;
+  border-radius:50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-weight:950;
+}
+.tile b{display:block;margin-bottom:6px;font-size:16px}
+.tile span{font-size:13px;color:var(--muted);line-height:1.35}
+label{display:block;font-size:12.5px;font-weight:900;margin-bottom:6px;color:#344054}
+select,input{
+  width:100%;
+  border:1px solid #d0d5dd;
+  border-radius:15px;
+  padding:12px;
+  font-size:14px;
+  background:#fff;
+  outline:none;
+}
+select:focus,input:focus{border-color:var(--brand);box-shadow:0 0 0 3px rgba(0,168,143,.12)}
+button{
+  border:0;
+  border-radius:16px;
+  padding:14px 18px;
+  font-size:15px;
+  font-weight:950;
+  cursor:pointer;
+}
+.primary{
+  width:100%;
+  background:var(--brand);
+  color:#fff;
+  margin-top:12px;
+  box-shadow:0 10px 22px rgba(0,168,143,.25);
+}
+.primary:hover{background:var(--dark)}
+.secondary{background:var(--blue);color:#3538cd}
+.results{
+  display:grid;
+  grid-template-columns:1.1fr .9fr;
+  gap:14px;
+  margin-top:14px;
+}
+.result-card{border:2px solid var(--brand);background:linear-gradient(180deg,#effffb,#fff)}
+.suggest-card{border:2px solid #f2b600;background:linear-gradient(180deg,#fff8db,#fff)}
+.row{
+  display:flex;
+  justify-content:space-between;
+  gap:14px;
+  border-bottom:1px dashed #cbd5e1;
+  padding:10px 0;
+  font-size:14px;
+}
+.row span:first-child{color:#475467}
+.row b{text-align:right}
+.total{font-size:30px;font-weight:950;color:var(--red);padding-top:12px}
+.badge{
+  display:inline-block;
+  background:var(--soft);
+  color:var(--dark);
+  border:1px solid #99f6e4;
+  border-radius:999px;
+  padding:5px 10px;
+  font-size:12px;
+  font-weight:900;
+}
+.pill{
+  display:inline-block;
+  background:var(--blue);
+  color:#3538cd;
+  border-radius:999px;
+  padding:4px 8px;
+  font-size:11.5px;
+  font-weight:850;
+  margin:3px;
+}
+.notice{
+  background:var(--gold);
+  border:1px solid #facc15;
+  color:#7a4a00;
+  border-radius:16px;
+  padding:12px;
+  margin-top:12px;
+  line-height:1.45;
+  font-size:13.5px;
+}
+.list{list-style:none;margin:8px 0 0;padding:0}
+.list li{
+  padding:12px;
+  border:1px solid var(--line);
+  border-radius:16px;
+  background:#fbfdff;
+  margin-bottom:8px;
+}
+.toolbar{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.searchbar{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:900px){
+  .stepbar,.grid,.biggrid,.results,.searchbar{grid-template-columns:1fr}
+  .hero h1{font-size:24px}
+  .wrapper{padding:10px}
+  .panel,.card{padding:14px;border-radius:20px}
+}
+</style>
+</head>
+<body>
+<div class="wrapper">
+  <section class="hero">
+    <h1>Total Wireless Easy Quote Tool</h1>
+    <p>Version 4: Add-a-line charges current month only, no upfront months + tax on offer price. Customer info → device → total today → suggestions.</p>
+  </section>
+
+  <nav class="stepbar">
+    <button class="step active" data-page="customer">1. Customer</button>
+    <button class="step" data-page="devicePage">2. Device</button>
+    <button class="step" data-page="quotePage">3. Quote</button>
+    <button class="step" data-page="rulesPage">Rules</button>
+  </nav>
+
+  <section id="customer" class="page active">
+    <div class="panel">
+      <div class="head">
+        <div>
+          <h2>What is the customer doing?</h2>
+          <p class="helper">Pick the action first. The calculator will apply the correct plan, access, TWP, tax, and upfront rules automatically.</p>
+        </div>
+        <span class="num">1</span>
+      </div>
+
+      <div class="biggrid" id="actionTiles">
+        <div class="tile active" data-action="switch"><b>Switch / Port-In</b><span>Customer keeps same number from another company.</span></div>
+        <div class="tile" data-action="newnumber"><b>New Number</b><span>Customer wants a new phone and new number.</span></div>
+        <div class="tile" data-action="addline"><b>Add a Line</b><span>Existing Total account adding another line.</span></div>
+        <div class="tile" data-action="upgrade"><b>Upgrade</b><span>Existing customer upgrading 1 or more lines.</span></div>
+        <div class="tile" data-action="finance"><b>Finance / FCOT</b><span>Credit-check eligible phone deals.</span></div>
+        <div class="tile" data-action="tablet"><b>Tablet</b><span>Requires eligible voice line.</span></div>
+        <div class="tile" data-action="home"><b>Home / Hotspot</b><span>Home internet or hotspot quote.</span></div>
+        <div class="tile" data-action="byod"><b>BYOD</b><span>Keep same phone, quote service only.</span></div>
+      </div>
+
+      <div class="grid" style="margin-top:14px">
+        <div>
+          <label>Current Plan</label>
+          <select id="currentPlan">
+            <option value="unknown">Unknown</option>
+            <option value="base">Base 5G - $40</option>
+            <option value="fiveg">Total 5G Unlimited - $55</option>
+            <option value="plus">Total 5G Unlimited+ - $65</option>
+          </select>
+        </div>
+        <div>
+          <label>Current Account Lines</label>
+          <input id="currentLines" type="number" value="1" min="1" max="10">
+        </div>
+        <div>
+          <label>Lines in This Deal</label>
+          <input id="dealLines" type="number" value="1" min="1" max="10">
+        </div>
+        <div>
+          <label>Budget Optional</label>
+          <input id="budget" type="number" placeholder="Example: 150">
+        </div>
+      </div>
+
+      <button class="primary" onclick="goTo('devicePage')">Next: Choose Device</button>
+    </div>
+  </section>
+
+  <section id="devicePage" class="page">
+    <div class="panel">
+      <div class="head">
+        <div>
+          <h2>Choose device</h2>
+          <p class="helper">Use search or choose Any to see all eligible devices. Tablet/home devices appear only for matching actions.</p>
+        </div>
+        <span class="num">2</span>
+      </div>
+
+      <div class="searchbar">
+        <div>
+          <label>Preference</label>
+          <select id="pref">
+            <option value="any">Any</option>
+            <option value="android">Android</option>
+            <option value="ios">iPhone</option>
+            <option value="other">Other / Hotspot</option>
+          </select>
+        </div>
+        <div>
+          <label>Search Device</label>
+          <input id="deviceSearch" placeholder="Type iPhone, Samsung, TCL, Moto...">
+        </div>
+      </div>
+
+      <div class="grid" style="margin-top:12px">
+        <div style="grid-column:1/-1">
+          <label>Device</label>
+          <select id="device"></select>
+        </div>
+      </div>
+
+      <div class="toolbar">
+        <button class="secondary" onclick="showAllDevices()">Show All Eligible Devices</button>
+        <button class="secondary" onclick="resetSearch()">Clear Search</button>
+      </div>
+
+      <button class="primary" onclick="goTo('quotePage')">Next: Calculate Quote</button>
+    </div>
+  </section>
+
+  <section id="quotePage" class="page">
+    <div class="panel">
+      <div class="head">
+        <div>
+          <h2>Final quote</h2>
+          <p class="helper">Review details, add accessories, and calculate the total today. Tax uses the offer/device price.</p>
+        </div>
+        <span class="num">3</span>
+      </div>
+
+      <div class="grid">
+        <div>
+          <label>4th Line Same Transaction?</label>
+          <select id="sameTxn">
+            <option value="yes">Yes</option>
+            <option value="no">No, added later</option>
+          </select>
+        </div>
+        <div>
+          <label>BYOD First Line?</label>
+          <select id="byodFirst">
+            <option value="no">No</option>
+            <option value="yes">Yes</option>
+          </select>
+        </div>
+        <div>
+          <label>Tax Rate on Offer Price (%)</label>
+          <input id="taxRate" type="number" value="8.25" step="0.01">
+        </div>
+        <div>
+          <label>Accessory / Add-on</label>
+          <input id="addon" type="number" value="0">
+        </div>
+      </div>
+
+      <button class="primary" onclick="calculate()">Calculate Total Today</button>
+    </div>
+
+    <div class="results">
+      <div id="result" class="card result-card">Choose details and calculate.</div>
+      <div id="suggestions" class="card suggest-card">Best suggestion will appear here.</div>
+    </div>
+
+    <section id="options" class="card"></section>
+  </section>
+
+  <section id="rulesPage" class="page">
+    <div class="panel">
+      <div class="head">
+        <div>
+          <h2>Built-in rules</h2>
+          <p class="helper">Quick reference for how this calculator works.</p>
+        </div>
+        <span class="num">R</span>
+      </div>
+      <ul class="list">
+        <li><b>Upgrade:</b> no plan payment, no access charge, no TWP. Device + tax + add-ons only.</li>
+        <li><b>Add a Line on existing Total account:</b> no upfront plan payment. Device + access + TWP + tax + add-ons only.</li>
+        <li><b>New Number / Switch single-line:</b> upfront months apply based on the promo row.</li>
+        <li><b>Free phone:</b> tax is $0. Paid phones are taxed on the offer/device price, not SRP.</li>
+        <li><b>TWP:</b> $8 per phone line unless it is an upgrade.</li>
+        <li><b>Access charge:</b> $25 per line unless it is an upgrade.</li>
+        <li><b>Family plan:</b> Total 5G = $55/$30/$25/$0. Total 5G+ = $65/$30/$25/$0.</li>
+      </ul>
+    </div>
+  </section>
+</div>
+
+<script>
+const ACCESS = 25;
+const TWP = 8;
+let selectedAction = "switch";
+
+const PLANS = {
+  base:{name:"Base 5G", price:40, family:null, byod:null},
+  fiveg:{name:"Total 5G Unlimited", price:55, family:[55,30,25,0], byod:30},
+  plus:{name:"Total 5G Unlimited+", price:65, family:[65,30,25,0], byod:35},
+  tablet:{name:"5G Unlimited Tablet", price:25, family:[25,25,25,25], byod:null},
+  home:{name:"Home Internet", price:45, family:null, byod:null}
+};
+
+function promo(type, price, plan, months, audience){
+  return {type, price, plan, months, audience};
+}
+
+const DEVICES = [
+{name:"Apple iPhone 13 128GB 5G",os:"ios",cat:"phone",srp:529,fcot:null,tags:["switch","newnumber","addline","upgrade"],promos:[promo("switch",0,"plus",2,"single"),promo("switch",0,"plus",1,"multi"),promo("newnumber",99.99,"plus",2,"single"),promo("newnumber",99.99,"plus",1,"multi"),promo("addline",99.99,"plus",1,"multi"),promo("addline",99.99,"plus",1,"single"),promo("upgrade",299.99,"base",1,"any")]},
+{name:"Apple iPhone 14 128GB 5G",os:"ios",cat:"phone",srp:599.99,fcot:0,tags:["switch","newnumber","addline","upgrade","finance"],promos:[promo("switch",49.99,"plus",2,"single"),promo("switch",49.99,"plus",1,"multi"),promo("newnumber",149.99,"plus",3,"single"),promo("newnumber",149.99,"plus",1,"multi"),promo("addline",149.99,"plus",1,"any"),promo("upgrade",599.99,"base",1,"any"),promo("finance",0,"plus",1,"any")]},
+{name:"Apple iPhone 15 128GB 5G",os:"ios",cat:"phone",srp:599.99,fcot:0,tags:["switch","newnumber","addline","upgrade","finance"],promos:[promo("switch",199.99,"plus",3,"single"),promo("switch",199.99,"plus",1,"multi"),promo("newnumber",299.99,"plus",3,"single"),promo("newnumber",299.99,"plus",1,"multi"),promo("addline",299.99,"plus",1,"any"),promo("upgrade",599.99,"base",1,"any"),promo("finance",0,"plus",1,"any")]},
+{name:"Apple iPhone 16 128GB 5G",os:"ios",cat:"phone",srp:729.99,fcot:129.99,tags:["switch","newnumber","addline","upgrade","finance"],promos:[promo("switch",479.99,"plus",3,"single"),promo("switch",479.99,"plus",1,"multi"),promo("newnumber",579.99,"plus",3,"single"),promo("newnumber",579.99,"plus",1,"multi"),promo("addline",579.99,"plus",1,"any"),promo("upgrade",729.99,"base",1,"any"),promo("finance",129.99,"plus",1,"any")]},
+{name:"Apple iPhone 16e 128GB 5G",os:"ios",cat:"phone",srp:599.99,fcot:0,tags:["switch","newnumber","addline","upgrade","finance"],promos:[promo("switch",79.99,"plus",2,"single"),promo("switch",79.99,"plus",1,"multi"),promo("newnumber",199.99,"plus",3,"single"),promo("newnumber",199.99,"plus",1,"multi"),promo("addline",199.99,"plus",1,"any"),promo("upgrade",599.99,"base",1,"any"),promo("finance",0,"plus",1,"any")]},
+{name:"Apple iPhone 16 Plus 128GB 5G",os:"ios",cat:"phone",srp:829.99,fcot:229.99,tags:["switch","newnumber","addline","upgrade","finance"],promos:[promo("switch",579.99,"plus",3,"single"),promo("switch",579.99,"plus",1,"multi"),promo("newnumber",679.99,"plus",3,"single"),promo("newnumber",679.99,"plus",1,"multi"),promo("addline",679.99,"plus",1,"any"),promo("upgrade",829.99,"base",1,"any"),promo("finance",229.99,"plus",1,"any")]},
+{name:"Apple iPhone 16 Pro 128GB 5G",os:"ios",cat:"phone",srp:899.99,fcot:299.99,tags:["switch","newnumber","upgrade","finance"],promos:[promo("switch",749.99,"base",1,"any"),promo("newnumber",899.99,"base",1,"any"),promo("upgrade",899.99,"base",1,"any"),promo("finance",299.99,"plus",1,"any")]},
+{name:"Apple iPhone 16 Pro Max 256GB 5G",os:"ios",cat:"phone",srp:1099.99,fcot:499.99,tags:["switch","newnumber","upgrade","finance"],promos:[promo("switch",949.99,"base",1,"any"),promo("newnumber",1029.99,"base",1,"any"),promo("upgrade",1099.99,"base",1,"any"),promo("finance",499.99,"plus",1,"any")]},
+{name:"Apple iPhone 17e 256GB 5G",os:"ios",cat:"phone",srp:599.99,fcot:0,tags:["switch","newnumber","upgrade","finance"],promos:[promo("switch",399.99,"plus",3,"single"),promo("switch",399.99,"plus",1,"multi"),promo("newnumber",499.99,"plus",3,"single"),promo("newnumber",499.99,"plus",1,"multi"),promo("upgrade",599.99,"base",1,"any"),promo("finance",0,"plus",1,"any")]},
+{name:"Apple iPhone 17 256GB 5G",os:"ios",cat:"phone",srp:829.99,fcot:229.99,tags:["switch","newnumber","upgrade","finance"],promos:[promo("switch",699.99,"base",1,"any"),promo("newnumber",749.99,"base",1,"any"),promo("upgrade",829.99,"base",1,"any"),promo("finance",229.99,"plus",1,"any")]},
+{name:"Apple iPhone Air 256GB 5G",os:"ios",cat:"phone",srp:949.99,fcot:349.99,tags:["switch","newnumber","upgrade","finance"],promos:[promo("switch",849.99,"plus",3,"single"),promo("switch",849.99,"plus",1,"multi"),promo("newnumber",949.99,"plus",3,"single"),promo("newnumber",949.99,"plus",1,"multi"),promo("upgrade",949.99,"base",1,"any"),promo("finance",349.99,"plus",1,"any")]},
+{name:"Apple iPhone 17 Pro 256GB 5G",os:"ios",cat:"phone",srp:1099.99,fcot:499.99,tags:["switch","newnumber","upgrade","finance"],promos:[promo("switch",949.99,"base",1,"any"),promo("newnumber",1099.99,"base",1,"any"),promo("upgrade",1099.99,"base",1,"any"),promo("finance",499.99,"plus",1,"any")]},
+{name:"Apple iPhone 17 Pro Max 256GB 5G",os:"ios",cat:"phone",srp:1199.99,fcot:599.99,tags:["switch","newnumber","upgrade","finance"],promos:[promo("switch",1029.99,"base",1,"any"),promo("newnumber",1199.99,"base",1,"any"),promo("upgrade",1199.99,"base",1,"any"),promo("finance",599.99,"plus",1,"any")]},
+
+{name:"Google Pixel 10a 5G",os:"android",cat:"phone",srp:449.99,fcot:0,tags:["switch","newnumber","upgrade","finance"],promos:[promo("switch",49.99,"plus",3,"single"),promo("switch",49.99,"plus",1,"multi"),promo("newnumber",149.99,"plus",3,"single"),promo("newnumber",149.99,"plus",1,"multi"),promo("upgrade",449.99,"base",1,"any"),promo("finance",0,"plus",1,"any")]},
+{name:"Motorola razr 2025 5G",os:"android",cat:"phone",srp:599.99,fcot:0,tags:["switch","newnumber","upgrade","finance"],promos:[promo("switch",99.99,"plus",2,"single"),promo("switch",99.99,"plus",1,"multi"),promo("newnumber",199.99,"plus",2,"single"),promo("newnumber",199.99,"plus",1,"multi"),promo("upgrade",599.99,"base",1,"any"),promo("finance",0,"plus",1,"any")]},
+{name:"Motorola razr 2025 FIFA 5G",os:"android",cat:"phone",srp:599.99,fcot:0,tags:["switch","newnumber","upgrade","finance"],promos:[promo("switch",99.99,"plus",2,"single"),promo("switch",99.99,"plus",1,"multi"),promo("newnumber",199.99,"plus",2,"single"),promo("newnumber",199.99,"plus",1,"multi"),promo("upgrade",599.99,"base",1,"any"),promo("finance",0,"plus",1,"any")]},
+{name:"Motorola Edge 2025 5G",os:"android",cat:"phone",srp:259.99,fcot:null,tags:["switch","newnumber","upgrade"],promos:[promo("switch",19.99,"fiveg",1,"any"),promo("newnumber",119.99,"fiveg",1,"any"),promo("upgrade",219.99,"base",1,"any")]},
+{name:"Motorola Moto G Play 2026 5G",os:"android",cat:"phone",srp:39.99,fcot:null,tags:["switch","newnumber","upgrade"],promos:[promo("switch",0,"base",1,"any"),promo("newnumber",0,"base",1,"any"),promo("upgrade",39.99,"base",1,"any")]},
+{name:"Motorola Moto G 5G 2026",os:"android",cat:"phone",srp:79.99,fcot:null,tags:["switch","newnumber","addline","upgrade"],promos:[promo("switch",0,"base",1,"any"),promo("newnumber",9.99,"base",1,"any"),promo("addline",9.99,"base",1,"any"),promo("upgrade",79.99,"base",1,"any")]},
+{name:"Motorola Moto G Power 5G 2025",os:"android",cat:"phone",srp:149.99,fcot:null,tags:["switch","newnumber","addline","upgrade"],promos:[promo("switch",0,"base",1,"any"),promo("newnumber",49.99,"base",1,"any"),promo("addline",49.99,"base",1,"any"),promo("upgrade",149.99,"base",1,"any")]},
+{name:"Motorola Moto G Power 5G 2026",os:"android",cat:"phone",srp:149.99,fcot:null,tags:["switch","newnumber","addline","upgrade"],promos:[promo("switch",0,"base",1,"any"),promo("newnumber",49.99,"base",1,"any"),promo("addline",49.99,"base",1,"any"),promo("upgrade",149.99,"base",1,"any")]},
+{name:"Motorola Moto G Power 5G 2024",os:"android",cat:"phone",srp:199.99,fcot:null,tags:["switch","newnumber","upgrade"],promos:[promo("switch",0,"base",1,"any"),promo("newnumber",9.99,"base",1,"any"),promo("upgrade",199.99,"base",1,"any")]},
+{name:"Motorola Moto G Stylus 5G 2025",os:"android",cat:"phone",srp:199.99,fcot:null,tags:["switch","newnumber","upgrade"],promos:[promo("switch",0,"base",1,"any"),promo("newnumber",49.99,"fiveg",1,"any"),promo("upgrade",99.99,"base",1,"any")]},
+{name:"Samsung Galaxy A16 5G",os:"android",cat:"phone",srp:129.99,fcot:null,tags:["switch","newnumber","addline","upgrade"],promos:[promo("switch",0,"fiveg",1,"any"),promo("newnumber",19.99,"fiveg",1,"any"),promo("addline",19.99,"fiveg",1,"any"),promo("upgrade",129.99,"base",1,"any")]},
+{name:"Samsung Galaxy A17 5G",os:"android",cat:"phone",srp:99.99,fcot:null,tags:["switch","newnumber","addline","upgrade"],promos:[promo("switch",0,"fiveg",1,"any"),promo("newnumber",19.99,"fiveg",1,"any"),promo("addline",19.99,"fiveg",1,"any"),promo("upgrade",49.99,"base",1,"any")]},
+{name:"Samsung Galaxy A26 5G",os:"android",cat:"phone",srp:199.99,fcot:null,tags:["switch","newnumber","addline","upgrade"],promos:[promo("switch",0,"fiveg",1,"any"),promo("newnumber",49.99,"fiveg",1,"any"),promo("addline",49.99,"fiveg",1,"any"),promo("upgrade",149.99,"base",1,"any")]},
+{name:"Samsung Galaxy A36 5G",os:"android",cat:"phone",srp:279.99,fcot:null,tags:["switch","newnumber","addline","upgrade"],promos:[promo("switch",0,"fiveg",1,"any"),promo("newnumber",99.99,"fiveg",1,"any"),promo("addline",99.99,"fiveg",1,"any"),promo("upgrade",199.99,"base",1,"any")]},
+{name:"Samsung Galaxy A37 5G",os:"android",cat:"phone",srp:449.99,fcot:0,tags:["switch","newnumber","upgrade","finance"],promos:[promo("switch",49.99,"fiveg",1,"any"),promo("newnumber",149.99,"fiveg",1,"any"),promo("upgrade",249.99,"base",1,"any"),promo("finance",0,"plus",1,"any")]},
+{name:"Samsung Galaxy S24 FE 5G",os:"android",cat:"phone",srp:699.99,fcot:null,tags:["switch","newnumber","upgrade"],promos:[promo("switch",199.99,"plus",3,"single"),promo("switch",199.99,"plus",1,"multi"),promo("newnumber",299.99,"plus",3,"single"),promo("newnumber",299.99,"plus",1,"multi"),promo("upgrade",699.99,"base",1,"any")]},
+{name:"Samsung Galaxy S25 FE 5G",os:"android",cat:"phone",srp:599.99,fcot:0,tags:["switch","newnumber","addline","upgrade","finance"],promos:[promo("switch",99.99,"plus",3,"single"),promo("switch",99.99,"plus",1,"multi"),promo("newnumber",199.99,"plus",3,"single"),promo("newnumber",199.99,"plus",1,"multi"),promo("addline",199.99,"plus",1,"any"),promo("upgrade",599.99,"base",1,"any"),promo("finance",0,"plus",1,"any")]},
+{name:"Samsung Galaxy S25 5G",os:"android",cat:"phone",srp:799.99,fcot:199.99,tags:["switch","newnumber","addline","upgrade","finance"],promos:[promo("switch",449.99,"plus",2,"single"),promo("switch",449.99,"plus",1,"multi"),promo("newnumber",549.99,"plus",2,"single"),promo("newnumber",549.99,"plus",1,"multi"),promo("addline",549.99,"plus",1,"any"),promo("upgrade",799.99,"base",1,"any"),promo("finance",199.99,"plus",1,"any")]},
+{name:"Samsung Galaxy S26 5G",os:"android",cat:"phone",srp:899.99,fcot:299.99,tags:["switch","newnumber","addline","upgrade","finance"],promos:[promo("switch",649.99,"plus",2,"single"),promo("switch",649.99,"plus",1,"multi"),promo("newnumber",749.99,"plus",2,"single"),promo("newnumber",749.99,"plus",1,"multi"),promo("addline",749.99,"plus",1,"any"),promo("upgrade",899.99,"base",1,"any"),promo("finance",299.99,"plus",1,"any")]},
+{name:"Samsung Galaxy S24 Ultra 5G",os:"android",cat:"phone",srp:1299.99,fcot:null,tags:["switch","newnumber","upgrade"],promos:[promo("switch",1180,"plus",1,"any"),promo("newnumber",1180,"plus",1,"any"),promo("upgrade",1299.99,"base",1,"any")]},
+{name:"TCL K33 5G",os:"android",cat:"phone",srp:79.99,fcot:null,tags:["switch","newnumber","addline","upgrade"],promos:[promo("switch",0,"fiveg",1,"any"),promo("newnumber",0,"fiveg",1,"any"),promo("addline",0,"fiveg",1,"any"),promo("upgrade",79.99,"base",1,"any")]},
+{name:"TCL 50 XE 5G",os:"android",cat:"phone",srp:79.99,fcot:null,tags:["switch","newnumber","addline","upgrade"],promos:[promo("switch",0,"fiveg",1,"any"),promo("newnumber",4.99,"fiveg",1,"any"),promo("addline",4.99,"fiveg",1,"any"),promo("upgrade",79.99,"base",1,"any")]},
+{name:"TCL 50XL NXTPAPER 5G",os:"android",cat:"phone",srp:99.99,fcot:null,tags:["switch","newnumber","upgrade"],promos:[promo("switch",0,"fiveg",1,"any"),promo("newnumber",19.99,"fiveg",1,"any"),promo("upgrade",99.99,"base",1,"any")]},
+{name:"Nokia 2760 Flip 4G",os:"android",cat:"phone",srp:59.99,fcot:null,tags:["switch","newnumber","upgrade"],promos:[promo("switch",0,"base",1,"any"),promo("newnumber",0,"base",1,"any"),promo("upgrade",59.99,"base",1,"any")]},
+{name:"Nokia C110 4G",os:"android",cat:"phone",srp:59.99,fcot:null,tags:["switch","newnumber","upgrade"],promos:[promo("switch",0,"base",1,"any"),promo("newnumber",0,"base",1,"any"),promo("upgrade",59.99,"base",1,"any")]},
+{name:"Nokia C300 4G",os:"android",cat:"phone",srp:79.99,fcot:null,tags:["switch","newnumber","upgrade"],promos:[promo("switch",0,"base",1,"any"),promo("newnumber",59.99,"base",1,"any"),promo("upgrade",79.99,"base",1,"any")]},
+
+{name:"CPO Apple iPhone 12 64GB 5G",os:"ios",cat:"phone",srp:260,fcot:null,tags:["switch","newnumber","upgrade"],promos:[promo("switch",0,"plus",2,"single"),promo("switch",0,"plus",1,"multi"),promo("newnumber",99.99,"plus",2,"single"),promo("newnumber",99.99,"plus",1,"multi"),promo("upgrade",249.99,"base",1,"any")]},
+{name:"CPO Apple iPhone 12 Pro 128GB 5G",os:"ios",cat:"phone",srp:353,fcot:null,tags:["switch","newnumber","upgrade"],promos:[promo("switch",49.99,"plus",2,"single"),promo("switch",49.99,"plus",1,"multi"),promo("newnumber",149.99,"plus",2,"single"),promo("newnumber",149.99,"plus",1,"multi"),promo("upgrade",299.99,"base",1,"any")]},
+{name:"CPO Apple iPhone 12 Pro Max 128GB 5G",os:"ios",cat:"phone",srp:441.5,fcot:null,tags:["switch","newnumber","upgrade"],promos:[promo("switch",99.99,"plus",2,"single"),promo("switch",99.99,"plus",1,"multi"),promo("newnumber",199.99,"plus",2,"single"),promo("newnumber",199.99,"plus",1,"multi"),promo("upgrade",349.99,"base",1,"any")]},
+{name:"CPO Apple iPhone 13 128GB 5G",os:"ios",cat:"phone",srp:349.99,fcot:null,tags:["switch","newnumber","upgrade"],promos:[promo("switch",0,"plus",2,"single"),promo("switch",0,"plus",1,"multi"),promo("newnumber",99.99,"plus",2,"single"),promo("newnumber",99.99,"plus",1,"multi"),promo("upgrade",199.99,"base",1,"any")]},
+{name:"CPO Apple iPhone 13 Pro 128GB 5G",os:"ios",cat:"phone",srp:399.99,fcot:null,tags:["switch","newnumber","upgrade"],promos:[promo("switch",99.99,"plus",2,"single"),promo("switch",99.99,"plus",1,"multi"),promo("newnumber",199.99,"plus",2,"single"),promo("newnumber",199.99,"plus",1,"multi"),promo("upgrade",299.99,"base",1,"any")]},
+{name:"CPO Apple iPhone 13 Pro Max 128GB 5G",os:"ios",cat:"phone",srp:581.5,fcot:null,tags:["switch","newnumber","upgrade"],promos:[promo("switch",149.99,"plus",2,"single"),promo("switch",149.99,"plus",1,"multi"),promo("newnumber",249.99,"plus",2,"single"),promo("newnumber",249.99,"plus",1,"multi"),promo("upgrade",349.99,"base",1,"any")]},
+{name:"CPO Apple iPhone 14 128GB 5G",os:"ios",cat:"phone",srp:399.99,fcot:null,tags:["switch","newnumber","upgrade"],promos:[promo("switch",99.99,"plus",2,"single"),promo("switch",99.99,"plus",1,"multi"),promo("newnumber",199.99,"plus",2,"single"),promo("newnumber",199.99,"plus",1,"multi"),promo("upgrade",299.99,"base",1,"any")]},
+{name:"CPO Apple iPhone 14 Plus 128GB 5G",os:"ios",cat:"phone",srp:449.99,fcot:null,tags:["switch","newnumber","upgrade"],promos:[promo("switch",149.99,"plus",2,"single"),promo("switch",149.99,"plus",1,"multi"),promo("newnumber",249.99,"plus",2,"single"),promo("newnumber",249.99,"plus",1,"multi"),promo("upgrade",349.99,"base",1,"any")]},
+{name:"CPO Apple iPhone 14 Pro 128GB 5G",os:"ios",cat:"phone",srp:449.99,fcot:null,tags:["switch","newnumber","upgrade"],promos:[promo("switch",149.99,"plus",2,"single"),promo("switch",149.99,"plus",1,"multi"),promo("newnumber",249.99,"plus",2,"single"),promo("newnumber",249.99,"plus",1,"multi"),promo("upgrade",349.99,"base",1,"any")]},
+{name:"CPO Apple iPhone 14 Pro Max 128GB 5G",os:"ios",cat:"phone",srp:449.99,fcot:null,tags:["switch","newnumber","upgrade"],promos:[promo("switch",249.99,"plus",2,"single"),promo("switch",249.99,"plus",1,"multi"),promo("newnumber",349.99,"plus",2,"single"),promo("newnumber",349.99,"plus",1,"multi"),promo("upgrade",449.99,"base",1,"any")]},
+
+{name:"Samsung Galaxy Tab A11+ 5G",os:"android",cat:"tablet",srp:279.99,fcot:null,tags:["tablet"],promos:[promo("tablet",49.99,"tablet",3,"multi")]},
+{name:"TCL Tab 8 Plus 4G",os:"android",cat:"tablet",srp:159.99,fcot:null,tags:["tablet"],promos:[promo("tablet",0,"tablet",1,"multi")]},
+{name:"TCL Tab 8 NXTPaper 5G",os:"android",cat:"tablet",srp:179.99,fcot:null,tags:["tablet"],promos:[promo("tablet",0,"tablet",1,"multi")]},
+{name:"TCL Tab 10 NXTPaper 5G",os:"android",cat:"tablet",srp:219.99,fcot:null,tags:["tablet"],promos:[promo("tablet",34.99,"tablet",1,"multi")]},
+{name:"Samsung Galaxy Tab A9+ 5G",os:"android",cat:"tablet",srp:239.99,fcot:null,tags:["tablet"],promos:[promo("tablet",0,"tablet",6,"multi")]},
+{name:"BLU BLAZE 5G Hotspot",os:"other",cat:"home",srp:49.99,fcot:null,tags:["home"],promos:[promo("home",49.99,"base",1,"any")]},
+{name:"Moxee Mobile Hotspot",os:"other",cat:"home",srp:49.99,fcot:null,tags:["home"],promos:[promo("home",49.99,"base",1,"any")]},
+{name:"Home Internet Router",os:"other",cat:"home",srp:99.99,fcot:null,tags:["home"],promos:[promo("home",4.99,"home",1,"any")]}
+];
+
+function money(v){
+  if(v === 0) return "FREE";
+  if(v === null || v === undefined || Number.isNaN(v)) return "N/A";
+  return "$" + Number(v).toFixed(2);
+}
+
+function goTo(pageId){
+  document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
+  document.getElementById(pageId).classList.add("active");
+  document.querySelectorAll(".step").forEach(s => s.classList.toggle("active", s.dataset.page === pageId));
+  if(pageId === "devicePage") filterDevices();
+  if(pageId === "quotePage") calculate();
+  window.scrollTo({top:0, behavior:"smooth"});
+}
+
+function getLines(){return Math.max(1, Number(document.getElementById("dealLines").value || 1));}
+
+function monthlyPlan(planKey, lines){
+  const sameTxn = document.getElementById("sameTxn").value;
+  const byodFirst = document.getElementById("byodFirst").value;
+  const plan = PLANS[planKey];
+
+  if(planKey === "base" || planKey === "tablet" || planKey === "home") return plan.price * lines;
+
+  let family = [...plan.family];
+  if(byodFirst === "yes" && plan.byod) family[0] = plan.byod;
+
+  let total = 0;
+  for(let i=0;i<lines;i++) total += family[i] !== undefined ? family[i] : family[family.length-1];
+  if(lines >= 4 && sameTxn === "no") total += 15;
+  return total;
+}
+
+
+function addLineMonthlyCharge(planKey, currentLines, addingLines){
+  // Existing Total account add-a-line:
+  // charge only the new line's current month amount, not promo upfront months.
+  // Example: customer has 1 line on $55 plan, adding 2nd line = $30.
+  const plan = PLANS[planKey];
+
+  if(planKey === "fiveg" || planKey === "plus"){
+    let total = 0;
+    for(let i = 1; i <= addingLines; i++){
+      const newLinePosition = currentLines + i;
+      const priceIndex = Math.min(newLinePosition - 1, plan.family.length - 1);
+      total += plan.family[priceIndex];
+    }
+    return total;
+  }
+
+  // Base plan does not have the same family discount logic here.
+  return plan.price * addingLines;
+}
+
+function audience(){return getLines() > 1 ? "multi" : "single";}
+
+function eligiblePromos(device, action){
+  const aud = audience();
+  if(action === "byod") return [promo("byod",0,"fiveg",1,"any")];
+  return device.promos.filter(p => p.type === action && (p.audience === "any" || p.audience === aud));
+}
+
+function deviceMatches(device, action, pref, search){
+  if(action === "byod") return false;
+  if(!device.tags.includes(action)) return false;
+  if(pref !== "any" && device.os !== pref && device.os !== "other") return false;
+  if(search && !device.name.toLowerCase().includes(search)) return false;
+  return eligiblePromos(device, action).length > 0;
+}
+
+function filterDevices(){
+  const action = selectedAction;
+  const pref = document.getElementById("pref").value;
+  const search = document.getElementById("deviceSearch").value.toLowerCase();
+  const select = document.getElementById("device");
+  select.innerHTML = "";
+
+  if(action === "byod"){
+    select.innerHTML = "<option value='byod'>BYOD / Keep Same Phone</option>";
+    return;
+  }
+
+  const list = DEVICES.filter(d => deviceMatches(d, action, pref, search));
+  list.forEach(d => {
+    const opt = document.createElement("option");
+    opt.value = DEVICES.indexOf(d);
+    opt.textContent = d.name;
+    select.appendChild(opt);
+  });
+  if(select.options.length === 0) select.innerHTML = "<option value=''>No eligible device</option>";
+}
+
+function calcDevice(device, promoObj){
+  const action = selectedAction;
+  const lines = getLines();
+  const currentLines = Number(document.getElementById("currentLines").value || 0);
+  const taxRate = Number(document.getElementById("taxRate").value || 0);
+  const addon = Number(document.getElementById("addon").value || 0);
+
+  const isUpgrade = promoObj.type === "upgrade";
+  const isByod = action === "byod";
+
+  // Correct add-a-line rule:
+  // If customer already has a Total Wireless account and is adding a line,
+  // do NOT charge upfront plan months today.
+  const existingTotalAddLine = action === "addline" && currentLines >= 1;
+
+  const deviceTotal = isByod ? 0 : promoObj.price * lines;
+
+  let planDue = 0;
+
+  if(isUpgrade){
+    planDue = 0;
+  } else if(existingTotalAddLine){
+    // Add-a-line on existing Total account:
+    // no upfront months, but customer pays this new line's current month charge.
+    planDue = addLineMonthlyCharge(promoObj.plan, currentLines, lines);
+  } else {
+    planDue = monthlyPlan(promoObj.plan, lines) * promoObj.months;
+  }
+
+  const activation = isUpgrade ? 0 : ACCESS * lines;
+
+  // Correct tax rule:
+  // Tax is on offer/device promo price, not SRP.
+  // FREE phone = $0 tax.
+  const offerPrice = isByod ? 0 : promoObj.price;
+  const tax = offerPrice === 0 ? 0 : offerPrice * (taxRate / 100) * lines;
+
+  const twp = (!isUpgrade && (isByod || (device && device.cat === "phone"))) ? TWP * lines : 0;
+
+  const total = deviceTotal + planDue + activation + tax + twp + addon;
+
+  return {
+    device,
+    promo: promoObj,
+    lines,
+    currentLines,
+    existingTotalAddLine,
+    offerPrice,
+    deviceTotal,
+    planDue,
+    activation,
+    tax,
+    twp,
+    addon,
+    total
+  };
+}
+
+function calculate(){
+  const action = selectedAction;
+  const selected = document.getElementById("device").value;
+
+  if(action === "byod"){
+    const c = calcDevice(null, promo("byod",0,"fiveg",1,"any"));
+    renderResult(c, "BYOD / Keep Same Phone");
+    renderSuggestions();
+    return;
+  }
+
+  if(selected === ""){
+    document.getElementById("result").innerHTML = "No eligible device.";
+    return;
+  }
+
+  const device = DEVICES[Number(selected)];
+  const promos = eligiblePromos(device, action);
+  if(!promos.length){
+    document.getElementById("result").innerHTML = "No eligible promo for this selection.";
+    return;
+  }
+  const best = promos.map(p => calcDevice(device,p)).sort((a,b) => a.total - b.total)[0];
+  renderResult(best, device.name);
+  renderSuggestions();
+}
+
+function renderResult(c, title){
+  const currentPlan = document.getElementById("currentPlan").value;
+  const currentLines = Number(document.getElementById("currentLines").value || 1);
+  const isUpgrade = c.promo.type === "upgrade";
+
+  document.getElementById("result").innerHTML = `
+    <span class="badge">Final Customer Total</span>
+    <h2>${title}</h2>
+    <div class="row"><span>Current Plan</span><b>${currentPlan === "unknown" ? "Unknown" : PLANS[currentPlan].name}</b></div>
+    <div class="row"><span>Current Account Lines</span><b>${currentLines}</b></div>
+    <div class="row"><span>${isUpgrade ? "Lines Being Upgraded" : "Lines in Transaction"}</span><b>${c.lines}</b></div>
+    <div class="row"><span>Required Plan</span><b>${isUpgrade ? "No plan payment for upgrade" : PLANS[c.promo.plan].name}</b></div>
+    <div class="row"><span>Offer Price Used for Tax</span><b>${money(c.offerPrice)}</b></div>\n    <div class="row"><span>Device Price</span><b>${money(c.deviceTotal)}</b></div>
+    <div class="row"><span>Plan Due Today</span><b>${money(c.planDue)}</b></div>\n    ${c.existingTotalAddLine ? `<div class="row"><span>Add-a-line Plan Rule</span><b>Current month only, no upfront months</b></div>` : ""}
+    <div class="row"><span>Access Charge</span><b>${money(c.activation)}</b></div>
+    <div class="row"><span>TWP ($8 × ${c.lines})</span><b>${money(c.twp)}</b></div>
+    <div class="row"><span>Tax on Offer Price</span><b>${money(c.tax)}</b></div>
+    <div class="row"><span>Add-on</span><b>${money(c.addon)}</b></div>
+    <div class="row total"><span>Total Today</span><b>${money(c.total)}</b></div>
+  `;
+}
+
+function allOptions(){
+  const action = selectedAction;
+  const pref = document.getElementById("pref").value;
+  const search = document.getElementById("deviceSearch").value.toLowerCase();
+  const budget = Number(document.getElementById("budget").value || 0);
+
+  if(action === "byod") return [calcDevice(null, promo("byod",0,"fiveg",1,"any"))];
+
+  let out = [];
+  DEVICES.filter(d => deviceMatches(d, action, pref, search)).forEach(d => {
+    eligiblePromos(d, action).forEach(p => out.push(calcDevice(d,p)));
+  });
+  if(budget > 0) out = out.filter(x => x.total <= budget);
+  return out.sort((a,b) => a.total - b.total);
+}
+
+function renderSuggestions(){
+  const options = allOptions();
+  const best = options[0];
+
+  if(!best){
+    document.getElementById("suggestions").innerHTML = "<b>No suggestion found.</b>";
+    document.getElementById("options").innerHTML = "";
+    return;
+  }
+
+  let reason = "Cheapest total today.";
+  if(best.promo.plan !== "base") reason = "Best price may require a higher promo plan, not always Base.";
+  if(selectedAction === "upgrade") reason = "Upgrade has no plan payment, no access charge, and no TWP.";
+  if(selectedAction === "addline") reason = "Existing Total add-a-line has no upfront plan payment.";
+  if(selectedAction === "byod") reason = "BYOD uses plan + access + TWP, no device tax.";
+
+  document.getElementById("suggestions").innerHTML = `
+    <b>Best Suggestion</b>
+    <div class="notice">
+      <b>${best.device ? best.device.name : "BYOD / Keep Same Phone"}</b><br>
+      ${reason}<br>
+      Required Plan: <b>${PLANS[best.promo.plan].name}</b><br>
+      Total Today: <b>${money(best.total)}</b>
+    </div>
+  `;
+
+  let html = "<h3>Other Good Options</h3><ul class='list'>";
+  options.slice(0,15).forEach(c => {
+    html += `<li><b>${c.device ? c.device.name : "BYOD / Keep Same Phone"}</b> <span class="pill">${PLANS[c.promo.plan].name}</span><span class="pill">${c.promo.months} mo</span><br>Device ${money(c.deviceTotal)} • Total Today <b>${money(c.total)}</b></li>`;
+  });
+  html += "</ul>";
+  document.getElementById("options").innerHTML = html;
+}
+
+function showAllDevices(){
+  document.getElementById("deviceSearch").value = "";
+  document.getElementById("pref").value = "any";
+  filterDevices();
+  calculate();
+}
+
+function resetSearch(){
+  document.getElementById("deviceSearch").value = "";
+  filterDevices();
+  calculate();
+}
+
+document.querySelectorAll(".step").forEach(btn => btn.addEventListener("click", () => goTo(btn.dataset.page)));
+
+document.querySelectorAll("#actionTiles .tile").forEach(tile => {
+  tile.addEventListener("click", () => {
+    document.querySelectorAll("#actionTiles .tile").forEach(t => t.classList.remove("active"));
+    tile.classList.add("active");
+    selectedAction = tile.dataset.action;
+    filterDevices();
+    calculate();
+  });
+});
+
+["pref","deviceSearch","dealLines"].forEach(id => {
+  document.getElementById(id).addEventListener("input", () => { filterDevices(); calculate(); });
+});
+["currentPlan","currentLines","sameTxn","byodFirst","taxRate","addon","budget"].forEach(id => {
+  document.getElementById(id).addEventListener("input", calculate);
+});
+document.getElementById("device").addEventListener("change", calculate);
+
+filterDevices();
+calculate();
+</script>
+</body>
+</html>
